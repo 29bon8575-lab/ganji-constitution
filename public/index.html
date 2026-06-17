@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>간지체질 분석기 · 干支體質論</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&family=Noto+Sans+KR:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#16161d;            /* 살짝 밝힌 차콜 (순흑 회피) */
+  --bg-grad-1:#1b1b24;
+  --bg-grad-2:#13131a;
+  --card:#212129;          /* 카드 한 단계 밝게 */
+  --card-2:#272731;
+  --line:rgba(212,175,110,0.22);
+  --line-soft:rgba(255,255,255,0.12);
+  --ink:#f3efe6;           /* 본문 또렷하게 */
+  --ink-soft:#b7b2a6;
+  --ink-dim:#8a857a;
+  --gold:#d9b873;          /* 금색 포인트 (채도 올림) */
+  --gold-soft:#e7d3a3;
+  --gold-bright:#f5dea8;
+  --gold-deep:#b8923f;
+  /* 체질색 — 명도·채도 올려 또렷하게 */
+  --c-tae-yang:#e8e3d6;    /* 태양인 金 — 은백/상아 */
+  --c-so-yang:#ff7a66;     /* 소양인 火 — 선명한 주홍 */
+  --c-tae-eum:#5fd39a;     /* 태음인 木 — 또렷한 녹 */
+  --c-so-eum:#5aa9ff;      /* 소음인 水 — 또렷한 청 */
+  /* 오행색 */
+  --el-mok:#5fd39a; --el-hwa:#ff7a66; --el-to:#e8b94e;
+  --el-geum:#e8e3d6; --el-su:#5aa9ff; --el-sang:#c79bff;
+  /* 등급색 */
+  --g-oo:#3fe08a; --g-o:#7bc97f; --g-mid:#f0c020; --g-x:#f0604a; --g-xx:#e0231a;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{background:var(--bg);}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  color:var(--ink);
+  line-height:1.6;
+  background:
+    radial-gradient(900px 500px at 50% -8%, rgba(217,184,115,0.10), transparent 60%),
+    radial-gradient(700px 600px at 100% 10%, rgba(90,169,255,0.05), transparent 55%),
+    linear-gradient(180deg, var(--bg-grad-1), var(--bg-grad-2) 60%, var(--bg));
+  background-attachment:fixed;
+  min-height:100vh;
+  padding:0 0 60px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 18px;}
+
+/* ── 상단 바: GANJI CONSTITUTION + 언어 ── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 2px 0;
+}
+.brand-mini{
+  font-family:'Cormorant Garamond',serif;
+  font-size:14px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--gold);font-weight:600;
+}
+.lang{display:flex;gap:2px;background:rgba(255,255,255,0.04);border:1px solid var(--line-soft);border-radius:999px;padding:3px;}
+.lang button{
+  font-family:'Cormorant Garamond',serif;font-weight:600;
+  background:none;border:none;color:var(--ink-dim);
+  padding:4px 12px;border-radius:999px;cursor:pointer;font-size:13px;letter-spacing:0.05em;
+  transition:all .2s;
+}
+.lang button.on{background:var(--gold);color:#1a1a1a;}
+.lang button.locked{opacity:0.32;cursor:not-allowed;}
+
+/* ── 헤더 ── */
+header{text-align:center;padding:26px 0 22px;}
+.title{
+  font-family:'Noto Serif KR',serif;font-weight:900;
+  font-size:34px;letter-spacing:-0.01em;color:var(--ink);
+  line-height:1.2;
+}
+.title .em{color:var(--gold);}
+.title .t-tool{font-size:0.68em;color:var(--ink-soft);font-weight:700;}
+.han-sub{
+  margin-top:10px;font-family:'Noto Serif KR',serif;font-weight:500;
+  font-size:12px;color:var(--ink-dim);letter-spacing:0.02em;
+}
+.han-sub .dot{color:var(--ink-dim);margin:0 7px;}
+.byline{
+  margin-top:6px;font-size:11.5px;color:var(--ink-dim);letter-spacing:0.02em;line-height:1.5;
+}
+
+/* ── 카드 ── */
+.card{
+  background:linear-gradient(180deg,var(--card),var(--card-2));
+  border:1px solid var(--line);border-radius:20px;
+  padding:22px;margin-top:18px;
+  box-shadow:0 18px 40px -24px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.card-label{font-size:12px;color:var(--gold);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px;font-weight:700;}
+
+/* ── 입력 ── */
+.cal-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:rgba(0,0,0,0.22);border-radius:13px;padding:5px;margin-bottom:14px;}
+.cal-toggle button{
+  font-family:'Noto Sans KR';font-weight:700;font-size:14px;
+  background:none;border:none;color:var(--ink-soft);padding:11px;border-radius:9px;cursor:pointer;transition:all .2s;
+}
+.cal-toggle button.on{background:linear-gradient(180deg,var(--gold-soft),var(--gold));color:#1d1a12;box-shadow:0 4px 14px -6px var(--gold-deep);}
+.selects{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;}
+.selects select{
+  font-family:'Noto Sans KR';font-size:15px;font-weight:500;
+  background:rgba(0,0,0,0.25);color:var(--ink);
+  border:1px solid var(--line-soft);border-radius:11px;padding:13px 8px;
+  appearance:none;text-align:center;cursor:pointer;
+}
+.selects select:focus{outline:none;border-color:var(--gold);}
+.leap-row{margin-top:10px;display:none;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);}
+.leap-row.show{display:flex;}
+.leap-row input{width:17px;height:17px;accent-color:var(--gold);}
+.analyze-btn{
+  width:100%;margin-top:16px;
+  font-family:'Noto Serif KR',serif;font-weight:700;font-size:17px;
+  background:linear-gradient(180deg,var(--gold-soft),var(--gold));
+  color:#1d1a12;border:none;border-radius:13px;padding:16px;cursor:pointer;
+  letter-spacing:0.05em;transition:transform .12s, box-shadow .2s;
+  box-shadow:0 10px 26px -10px var(--gold-deep);
+}
+.analyze-btn:active{transform:scale(0.985);}
+
+/* ── 결과 ── */
+#result{display:none;}
+.result-head{text-align:center;padding:8px 0 4px;}
+.con-name{
+  font-family:'Noto Serif KR',serif;font-weight:900;font-size:48px;line-height:1.12;
+  color:var(--gold-bright);
+  text-shadow:0 0 26px rgba(245,222,168,0.35);
+}
+.con-han{
+  font-family:'Noto Serif KR',serif;font-weight:500;font-size:20px;
+  color:var(--gold-soft);opacity:0.78;margin-top:4px;letter-spacing:0.06em;
+}
+.con-desc{font-size:14.5px;color:var(--ink-soft);margin-top:12px;}
+.result-head{position:relative;}
+.print-btn{position:absolute;top:0;right:0;background:transparent;border:1px solid var(--line);color:var(--ink-soft);font-size:12.5px;padding:7px 12px;border-radius:9px;cursor:pointer;font-family:inherit;transition:.2s;}
+.print-btn:hover{border-color:var(--gold-bright);color:var(--gold-bright);}
+@media print{
+  @page{margin:13mm;}
+  :root{
+    --ink:#111!important; --ink-soft:#222!important; --ink-dim:#444!important;
+    --gold:#000!important; --gold-soft:#000!important; --gold-bright:#000!important; --gold-deep:#000!important;
+    --line:#bbb!important; --line-soft:#ccc!important;
+    --el-mok:#0a7d4a!important; --el-hwa:#c0392b!important; --el-to:#9a7a10!important;
+    --el-geum:#333!important; --el-su:#1c5fb0!important; --el-sang:#6a3db0!important;
+    --g-oo:#0a7d4a!important; --g-o:#2e7d32!important; --g-mid:#8a6d00!important; --g-x:#b03a2e!important; --g-xx:#a01810!important;
+  }
+  body{background:#fff!important;color:#111!important;}
+  .topbar,header,.tabs,.loading,.no-print{display:none!important;}
+  /* 입력/안내 카드만 숨김, 결과카드(t-…)는 살림 */
+  .card:not([class*="t-"]){display:none!important;}
+  .card[class*="t-"]{display:block!important;background:#fff!important;border:none!important;box-shadow:none!important;padding:0!important;}
+  .tab-pane{display:block!important;animation:none!important;page-break-inside:avoid;margin-top:18px;}
+  .wrap{max-width:100%!important;padding:0!important;}
+  *{box-shadow:none!important;text-shadow:none!important;}
+  /* 본문 전반 검정 강제 */
+  .con-name{color:#111!important;font-size:30px!important;}
+  .con-han,.con-desc,.health-item,.meta-line,.key-judge,.disclaimer,.food-title,.rank-pos,.rank-str,.gj-pos,.gj-kr,.basis-note,.food-src{color:#222!important;}
+  .food-list{color:#111!important;}
+  .food-list .sep{color:#888!important;}
+  .gj-han{color:#111!important;}
+  .meta-line{background:#f2f2f2!important;}
+  .meta-line b{color:#111!important;}
+  /* 박스 테두리 옅은 회색, 배경 흰색 */
+  .gj-cell,.rank-cell,.food-group,.health-item,.basis-card{border-color:#bbb!important;background:#fff!important;}
+  /* 등급 칩: 테두리+검은 글씨 */
+  .grade-badge{background:#f0f0f0!important;border:1px solid #999!important;}
+  .gb-XX{color:#a01810!important;}
+  .grade-group{background:#fff!important;border-color:#bbb!important;}
+  .source-note{color:#444!important;border-top-color:#ccc!important;}
+  a{color:#111!important;text-decoration:none;}
+  /* 탭 제목 자동 표기 */
+  .tab-pane::before{display:block;font-weight:700;font-size:15px;color:#111;margin:14px 0 8px;border-bottom:1px solid #ccc;padding-bottom:5px;}
+  #pane-health::before{content:"건강 특성";}
+  #pane-food::before{content:"음식 정보";}
+  #pane-basis::before{content:"판별 기준";}
+  /* 판별기준 = 干支體質論 소개: 인쇄 시 펼침·흑백 */
+  .theory-box{display:block!important;border:1px solid #bbb!important;background:#fff!important;margin-top:10px!important;page-break-inside:avoid;}
+  .theory-head{cursor:default;padding:0 0 6px!important;color:#111!important;border-bottom:1px solid #ddd;}
+  .theory-head .tag,.theory-head .th-arrow{display:none!important;}
+  .theory-head .th-q{font-size:14px;color:#111!important;}
+  .theory-body{display:block!important;padding:10px 0 0!important;color:#222!important;}
+  .theory-body b{color:#111!important;}
+  .theory-body .sig{color:#444!important;}
+  .dist-name{color:#111!important;} .dist-pct{color:#333!important;}
+}
+.con-basis{font-size:12.5px;color:var(--ink-dim);margin-top:6px;}
+.con-basis b{color:var(--gold-soft);font-weight:600;}
+.conv-note{font-size:12px;color:var(--ink-dim);margin-top:10px;background:rgba(0,0,0,0.2);border-radius:8px;padding:7px 10px;display:inline-block;}
+
+/* 체질명은 골드 통일 (체질 구분은 글자로) */
+
+/* ── 탭 ── */
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;background:rgba(0,0,0,0.22);border-radius:13px;padding:5px;margin:20px 0 16px;}
+.tabs button{
+  font-family:'Noto Sans KR';font-weight:700;font-size:13.5px;
+  background:none;border:none;color:var(--ink-soft);padding:11px 4px;border-radius:9px;cursor:pointer;transition:all .2s;
+}
+.tabs button.on{background:rgba(217,184,115,0.16);color:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--line);}
+.tab-pane{display:none;}
+.tab-pane.on{display:block;animation:fade .3s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+/* ── 건강특성 ── */
+.health-item{
+  background:rgba(0,0,0,0.18);border-left:3px solid var(--gold);
+  border-radius:0 10px 10px 0;padding:13px 15px;margin-bottom:9px;font-size:14px;color:var(--ink);
+}
+/* ── 건강특성: 장부대소 + 단계별 ── */
+.organ-line{font-size:15px;color:var(--ink);background:rgba(212,175,110,0.10);
+  border:1px solid rgba(212,175,110,0.28);border-radius:11px;padding:13px 15px;text-align:center;}
+.organ-line b{color:var(--gold);font-size:17px;letter-spacing:0.04em;margin-right:6px;}
+.hstage{border-radius:0 11px 11px 0;padding:13px 15px;margin-top:11px;font-size:14px;line-height:1.7;
+  background:rgba(0,0,0,0.18);border-left:3px solid var(--gold);}
+.hs-tag{font-weight:700;font-size:13.5px;margin-bottom:6px;color:var(--ink);}
+.hs-tag .hs-han{font-size:11.5px;opacity:.6;font-weight:500;margin-left:4px;}
+.hs-body{color:var(--ink-soft);}
+.hs-sub{margin-top:9px;display:flex;flex-direction:column;gap:7px;}
+.hs-sub-item{font-size:13px;line-height:1.65;color:var(--ink-dim);padding-left:11px;border-left:2px solid rgba(211,106,90,0.4);}
+.hs-sub-item b{color:#ff9a86;font-weight:700;margin-right:3px;}
+@media print{ .hs-sub-item{color:#333!important;border-left-color:#b03a2e!important;} .hs-sub-item b{color:#8a1810!important;} }
+.hs-wansil{border-left-color:#2ea36a;}    .hs-wansil .hs-tag{color:#5fd49a;}
+.hs-daebyeong{border-left-color:#d9a441;}  .hs-daebyeong .hs-tag{color:#e8c46a;}
+.hs-jungbyeong{border-left-color:#d36a5a;} .hs-jungbyeong .hs-tag{color:#ff9a86;}
+@media print{
+  .organ-line{background:#f3eee0!important;border-color:#ccc!important;color:#111!important;}
+  .organ-line b{color:#111!important;}
+  .hstage{background:#fff!important;border:1px solid #ccc!important;border-left:3px solid #999!important;}
+  .hs-tag{color:#111!important;} .hs-body{color:#222!important;}
+  .hs-wansil{border-left-color:#2e7d32!important;} .hs-wansil .hs-tag{color:#1b5e20!important;}
+  .hs-daebyeong{border-left-color:#8a6d00!important;} .hs-daebyeong .hs-tag{color:#6b5400!important;}
+  .hs-jungbyeong{border-left-color:#b03a2e!important;} .hs-jungbyeong .hs-tag{color:#8a1810!important;}
+}
+
+/* ── 음식정보 (등급 그룹) ── */
+.grade-group{
+  margin-bottom:13px;border-radius:15px;padding:15px 16px 16px;
+  background:rgba(255,255,255,0.018);
+  border:1.5px solid var(--gline);                 /* 등급색 테두리 */
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.grade-head{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;margin-bottom:12px;letter-spacing:0.02em;}
+.grade-badge{font-size:11px;font-weight:800;padding:3px 11px;border-radius:999px;letter-spacing:0.03em;}
+.gb-OO{background:rgba(63,224,138,0.18);color:var(--g-oo);}
+.gb-O{background:rgba(123,201,127,0.16);color:var(--g-o);}
+.gb-mid{background:rgba(240,192,32,0.18);color:var(--g-mid);}
+.gb-X{background:rgba(240,96,74,0.18);color:var(--g-x);}
+.gb-XX{background:rgba(224,35,26,0.22);color:#ff5a4d;}
+.food-list{font-size:14px;color:var(--ink);line-height:1.95;word-break:keep-all;}
+.food-list .sep{color:var(--ink-dim);margin:0 5px;}
+/* 등급별 박스 테두리·강조색 (은은하게) */
+.gbox-OO{--gline:rgba(63,224,138,0.55);}
+.gbox-O{--gline:rgba(123,201,127,0.42);}
+.gbox-mid{--gline:rgba(240,192,32,0.50);}
+.gbox-X{--gline:rgba(240,96,74,0.50);}
+.gbox-XX{--gline:rgba(224,35,26,0.65);}
+.source-note{font-size:11.5px;color:var(--ink-dim);margin-top:8px;line-height:1.7;border-top:1px solid var(--line-soft);padding-top:12px;}
+
+/* ── 판단근거 ── */
+.basis-block{margin-bottom:20px;}
+.basis-title{font-size:12px;color:var(--gold);letter-spacing:0.1em;font-weight:700;margin-bottom:11px;text-transform:uppercase;}
+.hyo{font-size:18px;letter-spacing:1px;color:var(--el-sang);vertical-align:middle;}
+.rank-flow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding-bottom:4px;}
+.rank-cell{
+  flex:0 0 auto;min-width:54px;text-align:center;
+  background:rgba(0,0,0,0.2);border:1px solid var(--line-soft);border-radius:12px;padding:9px 4px;position:relative;
+}
+.rank-cell.top{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset, 0 8px 20px -10px var(--gold-deep);}
+.rank-no{font-size:9px;color:var(--ink-dim);letter-spacing:0.05em;}
+.rank-char{font-family:'Noto Serif KR',serif;font-weight:700;font-size:24px;line-height:1.2;margin:2px 0;}
+.rank-pos{font-size:10px;color:var(--ink-soft);}
+.rank-str{font-size:9px;color:var(--gold-soft);margin-top:2px;}
+.rank-arrow{flex:0 0 auto;align-self:center;color:var(--ink-dim);font-size:13px;padding:0 3px;}
+.el-목{color:var(--el-mok);} .el-화{color:var(--el-hwa);} .el-토{color:var(--el-to);}
+.el-금{color:var(--el-geum);} .el-수{color:var(--el-su);} .el-相{color:var(--el-sang);}
+.key-judge{
+  background:rgba(217,184,115,0.08);border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px;margin-top:14px;font-size:14px;color:var(--ink);
+}
+.key-judge b{color:var(--gold-soft);}
+.key-judge .kj-organ{margin-top:9px;padding-top:9px;border-top:1px solid var(--line-soft);font-size:13px;color:var(--ink-soft);line-height:1.6;}
+.key-judge .kj-organ b{color:var(--gold-soft);}
+/* ── 장부대소 상응표 (좌우 2열) ── */
+.organ-map{margin:18px 0 4px;border:1px solid rgba(217,184,115,0.30);background:rgba(217,184,115,0.05);border-radius:13px;overflow:hidden;}
+.organ-map .om-head{padding:11px 16px;font-size:13px;font-weight:700;color:var(--gold-soft);background:rgba(217,184,115,0.09);letter-spacing:0.01em;}
+.organ-map .om-table{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:0;padding:14px 12px;}
+.organ-map .om-side{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px;background:rgba(0,0,0,0.18);border:1px solid var(--line-soft);border-radius:11px;}
+.organ-map .om-left{border-color:rgba(217,184,115,0.22);}
+.organ-map .om-cap{font-size:11.5px;color:var(--ink-dim);margin-bottom:8px;text-align:center;}
+.organ-map .om-cap b{color:var(--gold-soft);font-weight:700;}
+.organ-map .om-strlabel{font-size:10.5px;color:var(--gold-soft);font-weight:700;letter-spacing:0.03em;margin-right:5px;opacity:0.92;}
+.organ-map .om-seq{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:3px 2px;font-size:13px;line-height:1.75;text-align:center;}
+.organ-map .om-el{font-weight:700;color:var(--ink);}
+.organ-map .om-org{font-weight:600;color:var(--ink);white-space:nowrap;}
+.organ-map .om-oh{font-size:10px;color:var(--gold-soft);margin-left:1px;vertical-align:2px;}
+.organ-map .om-gt{color:var(--gold-soft);margin:0 4px;font-size:15px;font-weight:700;opacity:0.85;}
+.organ-map .om-mid{display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--gold);padding:0 8px;}
+.organ-map .om-note{margin:0 16px;padding:8px 0 0;font-size:11px;color:var(--ink-dim);line-height:1.6;opacity:0.9;}
+.organ-map .om-tag{color:var(--g-mid);}
+.organ-map .om-src{margin:8px 16px 14px;font-size:10.5px;color:var(--ink-dim);opacity:0.7;line-height:1.5;}
+@media(max-width:520px){
+  .organ-map .om-table{grid-template-columns:1fr;gap:0;}
+  .organ-map .om-mid{padding:6px 0;font-size:18px;}
+}
+@media print{ .organ-map .om-head{background:#f3f3f3!important;} .organ-map,.organ-map .om-side{border-color:#bbb!important;background:#fff!important;} }
+.ganji-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px;}
+.gj-cell{background:rgba(0,0,0,0.2);border:1px solid var(--line-soft);border-radius:13px;padding:13px 6px;text-align:center;}
+.gj-pos{font-size:11px;color:var(--ink-dim);}
+.gj-han{font-family:'Noto Serif KR',serif;font-weight:700;font-size:28px;margin:4px 0 2px;color:var(--ink);}
+.gj-kr{font-size:12px;color:var(--ink-soft);}
+.meta-line{font-size:12.5px;color:var(--ink-soft);background:rgba(0,0,0,0.2);border-radius:9px;padding:9px 12px;margin-top:11px;}
+.meta-line b{color:var(--gold-soft);}
+.theory-box{
+  margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(199,155,255,0.04);
+}
+.theory-head{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:13px 15px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--ink);
+}
+.theory-head .tag{font-size:10px;font-weight:700;color:var(--el-sang);background:rgba(199,155,255,0.14);padding:2px 8px;border-radius:999px;letter-spacing:0.02em;}
+.theory-head .th-q{flex:1;}
+.theory-head .th-right{display:flex;align-items:center;gap:8px;flex:0 0 auto;}
+.theory-head .th-arrow{color:var(--el-sang);font-size:12px;transition:transform .25s;display:inline-block;}
+.theory-head.open .th-arrow{transform:rotate(180deg);}
+/* 복희역(동지 기준) 병기 — 청색 톤 */
+.bokhui-note{margin:14px 0 4px;border:1px solid rgba(64,150,230,0.34);background:rgba(64,150,230,0.06);border-radius:14px;overflow:hidden;}
+.bokhui-note .bk-head{padding:11px 16px;font-size:13.5px;font-weight:700;color:#3f86d6;background:rgba(64,150,230,0.10);letter-spacing:0.02em;}
+.bokhui-note .bk-body{padding:13px 16px 15px;font-size:13px;line-height:1.7;color:var(--ink-soft);}
+.bokhui-note .bk-result{margin:11px 0 9px;display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid rgba(64,150,230,0.4);border-radius:10px;background:rgba(64,150,230,0.05);font-size:14px;color:var(--ink);}
+.bokhui-note .bk-result b{color:#3f86d6;font-weight:800;}
+.bokhui-note .bk-ganji{font-weight:700;color:var(--ink);}
+.bokhui-note .bk-kwon{color:var(--g-mid);font-size:12.5px;}
+.bokhui-note .bk-foot{font-size:12px;color:var(--g-mid);margin-top:4px;}
+.bokhui-note .bk-note-day{font-size:11.5px;color:var(--g-mid);margin:-4px 0 4px;opacity:0.85;}
+/* 복희역 전환 버튼 */
+.bokhui-note .bk-switch{margin:10px 0 8px;padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:#3f86d6;background:rgba(64,150,230,0.12);border:1px solid rgba(64,150,230,0.45);border-radius:10px;cursor:pointer;transition:background .15s;letter-spacing:0.01em;}
+.bokhui-note .bk-switch:hover{background:rgba(64,150,230,0.20);}
+/* 복희역 보는 중 배지 */
+.side-badge{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 12px;margin:0 0 14px;padding:9px 14px;font-size:12.5px;font-weight:700;color:#3f86d6;background:rgba(64,150,230,0.10);border:1px solid rgba(64,150,230,0.34);border-radius:10px;}
+.side-badge .side-back{font-weight:700;color:var(--gold-soft);cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+.side-badge .side-back:hover{color:var(--gold);}
+/* 결과 헤더 장부대소 */
+.con-organ{color:var(--gold-soft);font-weight:700;}
+.con-organ-ko{margin-top:5px;font-size:12.5px;color:var(--ink-dim);letter-spacing:0.01em;line-height:1.5;}
+@media print{ .bokhui-note .bk-switch{display:none!important;} .side-badge{border-color:#bbb!important;background:#fff!important;color:#333!important;} }
+@media print{ .bokhui-note .bk-head{display:none!important;} .bokhui-note{border-color:#bbb!important;background:#fff!important;} }
+.theory-body{display:none;padding:0 15px 15px;font-size:13px;color:var(--ink-soft);line-height:1.75;}
+.theory-body.show{display:block;}
+.theory-body p{margin:0;}
+.theory-body .sig{margin-top:10px;font-size:12px;color:var(--ink-dim);font-style:italic;}
+.dist-table{margin:10px 0 4px;display:flex;flex-direction:column;gap:6px;}
+.dist-row{display:flex;align-items:center;gap:9px;font-size:12.5px;}
+.dist-name{flex:0 0 52px;color:var(--ink);font-weight:600;}
+.dist-bar{flex:1;height:9px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;}
+.dist-fill{display:block;height:100%;background:linear-gradient(90deg,var(--el-sang),#c79bff);border-radius:999px;}
+.dist-pct{flex:0 0 42px;text-align:right;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+@media print{ .dist-bar{background:#eee!important;} .dist-fill{background:#999!important;} }
+
+/* ── 면책 ── */
+.disclaimer{
+  margin-top:18px;font-size:11.5px;color:var(--ink-dim);text-align:center;line-height:1.8;
+  border-top:1px solid var(--line-soft);padding-top:18px;
+}
+.footer-brand{margin-top:10px;font-family:'Cormorant Garamond',serif;letter-spacing:0.1em;color:var(--gold-deep);font-size:12px;}
+.footer-org{margin-top:5px;font-size:11.5px;color:var(--ink-dim);letter-spacing:0.03em;}
+.footer-org a{color:var(--gold-soft);text-decoration:none;}
+.loading{text-align:center;color:var(--gold-soft);padding:20px;font-size:14px;display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand-mini" id="brandMini">GANJI CONSTITUTION</div>
+    <div class="lang">
+      <button class="on" data-lang="ko" onclick="setLang('ko')">KO</button>
+      <button data-lang="en" onclick="setLang('en')">EN</button>
+      <button class="locked" data-lang="ja" title="準備中">日</button>
+    </div>
+  </div>
+
+  <header>
+    <h1 class="title" id="hTitle"><span class="em">干支體質</span> <span class="t-tool">분석기</span></h1>
+    <div class="han-sub" id="hSub">Sasang &amp; Eight-Constitution Typing by Birth Ganji (年月日干支)</div>
+  </header>
+
+  <div class="card">
+    <div class="card-label" id="lInput">생년월일 입력</div>
+    <div class="cal-toggle">
+      <button class="on" id="btnSolar" onclick="setCal('solar')">양력</button>
+      <button id="btnLunar" onclick="setCal('lunar')">음력</button>
+    </div>
+    <div class="selects">
+      <select id="selYear"></select>
+      <select id="selMonth"></select>
+      <select id="selDay"></select>
+    </div>
+    <label class="leap-row" id="leapRow"><input type="checkbox" id="chkLeap"><span id="lLeap">윤달</span></label>
+    <button class="analyze-btn" id="btnAnalyze" onclick="analyze()">체질 분석하기</button>
+  </div>
+
+  <div class="loading" id="loading">분석 중…</div>
+
+  <div id="result"></div>
+
+</div>
+
+<script src="/guidance-data.js"></script>
+<script>
+
+const GUIDANCE_DATA8 = window.GUIDANCE_DATA8 || {};
+
+// ── i18n (한국어만 채움 · 영어 일부 · 일본어 잠금) ──
+const I18N = {
+  ko:{ brand:'GANJI CONSTITUTION', titleHan:'干支體質', titleTool:'분석기', sub:'Sasang & Eight-Constitution Typing by Birth Ganji (年月日干支)',
+       by1:'입체음양오행론·간지체질 창시 — 고불 박용규', by2:'干支體質論 알고리즘 — 황교헌 한의학박사 (KMD, Ph.D.) · MediEnlight',
+       input:'생년월일 입력', solar:'양력', lunar:'음력', leap:'윤달', analyze:'체질 분석하기', loading:'분석 중…',
+       tabHealth:'건강 특성', tabFood:'음식 정보', tabBasis:'판별 기준',
+       year:'년', month:'월', day:'일' },
+  en:{ brand:'GANJI CONSTITUTION', titleHan:'干支體質', titleTool:'Analyzer', sub:'Sasang & Eight-Constitution Typing by Birth Ganji',
+       by1:'Ipche Eumyang Ohaeng — founded by Gobul Park Yong-gyu', by2:'Ganji Constitution algorithm — Hwang Gyo-heon, KMD, Ph.D. · MediEnlight',
+       input:'Date of Birth', solar:'Solar', lunar:'Lunar', leap:'Leap', analyze:'Analyze Type', loading:'Analyzing…',
+       tabHealth:'Traits', tabFood:'Diet', tabBasis:'Criteria',
+       year:'Y', month:'M', day:'D' },
+};
+let LANG='ko';
+
+const CON_META = {
+  '태양인':{han:'太陽人', desc:'창의적이고 진취적인 기상의 체질', en:'Tae-yang'},
+  '소양인':{han:'少陽人', desc:'활동적이고 외향적인 양(陽)의 체질', en:'So-yang'},
+  '태음인':{han:'太陰人', desc:'안정적이고 끈기 있는 대지의 기운을 지닌 체질', en:'Tae-eum'},
+  '소음인':{han:'少陰人', desc:'섬세하고 내실 있는 음(陰)의 체질', en:'So-eum'},
+};
+const HEALTH = {
+  '태양인':{ org:'肺大肝小', orgKo:'폐(肺) 기능이 크고 간(肝) 기능이 작은 체질',
+    wansil:'소변량이 많고 잘 나오면 건강합니다. 평소에는 소변이 잘 나오지만, 몸이 불편하면 소변보기가 불편합니다.',
+    daebyeong:'8~9일 변비가 계속되면서 입에서 침이나 거품이 자주 나오면 대병입니다. 곧 치료를 받아야 합니다.',
+    jungbyeong:'열격증·반위증·해역증이 태양인의 체질병증인데, 이런 증세는 병이 중하기 전에는 잘 나타나지 않으므로 평소에는 건강한 사람처럼 보입니다.',
+    jungbyeongSub:[
+      ['열격증','음식물을 삼키기 어렵고 삼켰다 해도 위에까지 내려가지 못하고 바로 토하는 증상입니다. 이때 식도 부위에서 서늘한 바람이 나오는 것처럼 느껴집니다.'],
+      ['반위증','음식물을 먹으면 명치 아래가 그득하고 일정 시간이 지나면 토하는 증상입니다.'],
+      ['해역증','말하기도 귀찮을 정도로 온몸에 권태감이 심하고 노곤하여 움직이기 싫으며 다리가 풀리고 몸이 여위는 증상입니다.']
+    ] },
+  '소양인':{ org:'脾大腎小', orgKo:'비위(脾胃) 기능이 크고 신장(腎) 기능이 작은 체질',
+    wansil:'대변이 잘 통하면 건강한 상태입니다. 평소엔 대변을 순조롭게 보지만, 몸이 불편하면 변비가 생깁니다.',
+    daebyeong:'하루라도 대변을 못 보면 대병을 의심해야 합니다. 소양인은 병의 진전이 빠르므로 대변이 불통하면 다른 증상을 볼 것도 없이 즉시 치료책을 강구해야 합니다.',
+    jungbyeong:'대변을 이삼 일만 못 보아도 가슴이 답답하고 고통스러우면 중병입니다. 소양인은 오랫동안 대변을 못 보면 반드시 가슴이 뜨거워지는 증세를 보입니다.' },
+  '태음인':{ org:'肝大肺小', orgKo:'간(肝) 기능이 크고 폐·심장·대장·피부 기능이 작은 체질',
+    wansil:'땀구멍이 잘 통하여 땀을 잘 배출하면 건강합니다. 평소에 땀이 많아 조금만 몸을 움직여도 땀을 흘리는데, 땀을 쏟고 나면 상쾌해집니다.',
+    daebyeong:'피부가 야무지고 단단하면서 땀이 안 나오면 대병입니다. 땀이 안 나오면 곧 다른 증상을 동반하여 병이 진행되므로 서둘러 치료해야 합니다.',
+    jungbyeong:'설사병이 생겨 소장의 중초가 꽉 막혀서 마치 안개가 낀 것 같은 답답함을 느끼면 중병입니다.' },
+  '소음인':{ org:'腎大脾小', orgKo:'신장(腎) 기능이 크고 비위(脾胃) 기능이 작은 체질',
+    wansil:'비위의 기운이 약하지만, 비위가 제대로 움직여 음식의 소화를 잘하면 건강합니다. 음식을 보아도 먹고 싶은 생각이 안 생기고 먹어도 가슴이 그득하면 소음인 스스로 몸에 불편함을 느낍니다.',
+    daebyeong:'땀이 많이 나오면 병입니다. 태음인과는 달리 허한 땀이 나오면 병이 이미 진행 중이므로 서둘러 치료해야 합니다.',
+    jungbyeong:'설사가 멎지 않으면서 아랫배가 얼음장같이 차가운 증상입니다. 소음인에게는 허약한 비위 때문에 생기는 병이 많습니다. 평생 위장병으로 고생하는 사람도 소음인이 많습니다. 그리고 다른 병이 있더라도 비위에 별 탈이 없으면 크게 염려하지 않아도 됩니다.' }
+}
+
+// 등급 정규화 (양/음 듀얼 표기 → 대표 등급은 첫 값 기준 그룹핑, 듀얼은 칩에 병기)
+const GRADE_ORDER=['OO','O','△','X','XX'];
+const GRADE_LABEL={ko:{'OO':'매우 이로움','O':'이로움','△':'주의','X':'해로움','XX':'절대 금기'},
+                   en:{'OO':'Very Good','O':'Good','△':'Caution','X':'Avoid','XX':'Strictly Avoid'}};
+const GRADE_CLASS={'OO':'OO','O':'O','△':'mid','X':'X','XX':'XX'};
+// 순위 표시용 한자 매핑 (천간·지지·위치라벨)
+const STEM_HAN={'갑':'甲','을':'乙','병':'丙','정':'丁','무':'戊','기':'己','경':'庚','신':'辛','임':'壬','계':'癸'};
+const BRANCH_HAN={'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
+const CHAR_HAN=Object.assign({},STEM_HAN,BRANCH_HAN);
+const POS_HAN={'일지':'日支','월지':'月支','년지':'年支','연지':'年支','일간':'日干','월간':'月干','년간':'年干','연간':'年干'};
+
+// ── 셀렉트 채우기 ──
+(function fillSelects(){
+  const y=document.getElementById('selYear'), m=document.getElementById('selMonth'), d=document.getElementById('selDay');
+  const now=new Date().getFullYear();
+  const ph=(sel,txt)=>{const o=document.createElement('option');o.value='';o.textContent=txt;o.disabled=true;o.selected=true;sel.appendChild(o);};
+  ph(y,'년'); for(let i=now;i>=1900;i--){const o=document.createElement('option');o.value=i;o.textContent=i;y.appendChild(o);}
+  ph(m,'월'); for(let i=1;i<=12;i++){const o=document.createElement('option');o.value=i;o.textContent=i;m.appendChild(o);}
+  ph(d,'일'); for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i;d.appendChild(o);}
+  // 기본값 빈칸 (사용자가 직접 선택)
+})();
+
+let calType='solar';
+function setCal(t){calType=t;
+  document.getElementById('btnSolar').classList.toggle('on',t==='solar');
+  document.getElementById('btnLunar').classList.toggle('on',t==='lunar');
+  document.getElementById('leapRow').classList.toggle('show',t==='lunar');
+}
+
+function setLang(l){
+  if(l==='ja')return; // 잠금
+  LANG=l;
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+  const t=I18N[l];
+  document.getElementById('brandMini').textContent=t.brand;
+  document.getElementById('hTitle').innerHTML='<span class="em">'+t.titleHan+'</span> <span class="t-tool">'+t.titleTool+'</span>';
+  document.getElementById('hSub').textContent = t.sub;
+  document.getElementById('lInput').textContent=t.input;
+  document.getElementById('btnSolar').textContent=t.solar;
+  document.getElementById('btnLunar').textContent=t.lunar;
+  document.getElementById('lLeap').textContent=t.leap;
+  document.getElementById('btnAnalyze').textContent=t.analyze;
+  if(lastResult)renderResult(lastResult); // 결과도 언어 갱신
+}
+
+// ───────────────────────────────────────────
+//  서버 호출 — 干支體質論 계산엔진은 /api/analyze 에 은닉
+// ───────────────────────────────────────────
+let lastResult=null;
+async function analyze(){
+  const L=document.getElementById('loading'), R=document.getElementById('result');
+  if(!selYear.value || !selMonth.value || !selDay.value){
+    R.style.display='block';
+    R.innerHTML='<div class="card" style="text-align:center;color:var(--ink-soft)">생년월일(년·월·일)을 모두 선택해주세요.</div>';
+    return;
+  }
+  const p={calType, year:+selYear.value, month:+selMonth.value, day:+selDay.value, isLeap:chkLeap.checked};
+  L.style.display='block'; R.style.display='none';
+  try{
+    const resp=await fetch('/api/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(p)
+    });
+    const data=await resp.json();
+    L.style.display='none';
+    if(!resp.ok || !data.ok){
+      R.style.display='block';
+      R.innerHTML='<div class="card" style="text-align:center;color:var(--ink-soft)">'+
+        (data && data.error ? data.error : '분석 중 오류가 발생했습니다.')+'</div>';
+      return;
+    }
+    lastResult=data;
+    activeSide='primary'; activeTab='health';
+    renderResult(data);
+  }catch(e){
+    L.style.display='none';
+    R.style.display='block';
+    R.innerHTML='<div class="card" style="text-align:center;color:var(--ink-soft)">서버 연결에 실패했습니다.<br>잠시 후 다시 시도해주세요.</div>';
+  }
+}
+
+let activeTab='health';
+let activeSide='primary';   // 'primary'(통용/입춘) | 'bokhui'(복희역/동지) — 지금 보는 판정
+function renderResult(data){
+  const p = (activeSide==='bokhui' && data.bokhui) ? data.bokhui : data.primary;
+  const con=p.constitution, meta=CON_META[con], t=I18N[LANG];
+  const R=document.getElementById('result');
+  R.style.display='block';
+  R.className='';
+
+  // 결과 헤더 — 사상 + 세부형(Ⅰ/Ⅱ) + 장부대소 (8체질명은 헤더 미표기, 상응표에서 다룸)
+  const dispLabel = p.displayLabel || p.formLabel || con; // '소양인 (Ⅱ형)'
+  const formLabel = p.formLabel || con;                   // '소양인 2형' (내부)
+  const Hh = (typeof HEALTH!=='undefined' && HEALTH[con]) ? HEALTH[con] : {};
+  const organHan = Hh.org || '';                          // '脾大腎小'
+  const organKo  = Hh.orgKo || '';                        // '비위(脾胃) 기능이 크고 …'
+
+  // 복희역(동지) 보는 중 배지
+  const sideBadge = (activeSide==='bokhui')
+    ? `<div class="side-badge">🜂 복희역(동지) 기준으로 보는 중<span class="side-back" onclick="switchSide('primary')">통용(입춘) 기준으로 ⇄</span></div>`
+    : '';
+
+  let html=`<div class="card t-${con}">
+    ${sideBadge}
+    <div class="result-head">
+      <button class="print-btn no-print" onclick="window.print()" title="인쇄">🖨 인쇄</button>
+      <div class="con-name">${LANG==='ko'?dispLabel:meta.en}</div>
+      <div class="con-han">${meta.han}${organHan?` · <span class="con-organ">${organHan}</span>`:''}</div>
+      ${organKo?`<div class="con-organ-ko">${organKo}</div>`:''}
+    </div>`;
+
+  // 간지표 (체질명 바로 아래 — 항상 표시)
+  const g=p.ganji;
+  html+=`<div class="ganji-row">
+    ${gjCell('년주',g.year)}${gjCell('월주',g.month)}${gjCell('일주',g.day)}
+  </div>`;
+
+  // 복희역(동지 기점) 병기 — 주 판별(primary)을 볼 때 + 체질이 갈릴 때만 표시
+  if(activeSide==='primary' && data.bokhui && data.bokhui.differs){
+    const bk=data.bokhui;
+    const bkLabel = bk.displayLabel || bk.formLabel || bk.constitution;
+    const bg=bk.ganji;
+    const dj=data.dongjiDate;
+    const djStr = dj ? (Array.isArray(dj) ? `${dj[1]}월 ${dj[2]}일경` : `${dj.month}월 ${dj.day}일경`) : '';
+    html+=`<div class="bokhui-note">
+      <div class="bk-head">🜂 복희역(伏羲易) 동지 기준 — 다른 해석</div>
+      <div class="bk-body">
+        <div class="bk-result">
+          <span class="bk-ganji">${bg.year.stemHanja}${bg.year.branchHanja}년 ${bg.month.stemHanja}${bg.month.branchHanja}월</span>
+          → <b>${bkLabel}</b>
+        </div>
+        <div class="bk-note-day">※ 冬至(${djStr}, 복희역의 새해 기점)으로는 년·월주(年·月柱)가 달라져 통용되는 입춘(立春) 기준과 체질이 갈릴 수 있습니다.</div>
+        <div class="bk-note-day">※ 일주(日柱) ${bg.day.stemHanja}${bg.day.branchHanja}는 동지·입춘과 무관하게 동일합니다.</div>
+        <div class="bk-switch" onclick="switchSide('bokhui')">이 기준(복희역)으로 음식·건강 정보 보기 ⇄</div>
+        <div class="bk-foot">비교하여 참고하시고, 정확한 판별은 전문 한의사와 상담하십시오.</div>
+      </div>
+    </div>`;
+  }
+  // 절기
+  if(data.jieqi){
+    const dt=data.jieqi.date;
+    const dstr=Array.isArray(dt)?`${dt[0]}년 ${dt[1]}월 ${dt[2]}일`:`${dt.year}년 ${dt.month}월 ${dt.day}일`;
+    html+=`<div class="meta-line">절기: <b>${data.jieqi.name}</b> (${dstr}) ~ ${data.jieqi.next} 전</div>`;
+  }
+
+  // 탭
+  html+=`<div class="tabs">
+    <button class="${activeTab==='health'?'on':''}" onclick="switchTab('health')">${t.tabHealth}</button>
+    <button class="${activeTab==='food'?'on':''}" onclick="switchTab('food')">${t.tabFood}</button>
+    <button class="${activeTab==='basis'?'on':''}" onclick="switchTab('basis')">${t.tabBasis}</button>
+  </div>`;
+
+  // 1) 건강특성
+  html+=`<div class="tab-pane ${activeTab==='health'?'on':''}" id="pane-health">`;
+  html+=renderHealth(con);
+  html+=`</div>`;
+
+  // 2) 음식정보 — 등급 그룹
+  html+=`<div class="tab-pane ${activeTab==='food'?'on':''}" id="pane-food">`;
+  html+=renderFood(p.foodKey);
+  html+=`</div>`;
+
+  // 3) 판단근거
+  html+=`<div class="tab-pane ${activeTab==='basis'?'on':''}" id="pane-basis">`;
+  html+=renderBasis(data);
+  html+=`</div>`;
+
+  // 면책
+  html+=`<div class="disclaimer">
+    본 결과는 干支體質論에 기반한 체질 참고 정보이며, 의학적 진단·치료를 대체하지 않습니다.<br>정확한 판별은 전문 한의사와 상담하시기 바랍니다.
+    <div class="footer-brand">© MediEnlight</div>
+    <div class="footer-org">입체음양오행론·간지체질 창시 — 고불 박용규</div>
+    <div class="footer-org">干支體質論 알고리즘 — 황교헌 한의학박사 (KMD, Ph.D.)</div>
+    <div class="footer-org">문의 <a href="mailto:bon8575@naver.com">bon8575@naver.com</a></div>
+  </div>`;
+
+  html+=`</div>`;
+  R.innerHTML=html;
+}
+
+function switchTab(tab){activeTab=tab;renderResult(lastResult);}
+function switchSide(side){
+  activeSide=side;
+  if(side==='bokhui') activeTab='food';   // 복희역 전환 시 음식 탭으로 이동
+  renderResult(lastResult);
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderHealth(con){
+  const H=HEALTH[con]||{};
+  let html='';
+  // 장부대소 (맨 위)
+  html+=`<div class="organ-line"><b>${H.org||''}</b> · ${H.orgKo||''}</div>`;
+
+  // 용어 안내 (접힘)
+  html+=`<div class="theory-box" style="margin-top:12px">
+    <div class="theory-head" onclick="this.nextElementSibling.classList.toggle('show'); this.classList.toggle('open')">
+      <span class="th-q">완실무병 · 대병 · 중병이란</span>
+      <span class="th-right"><span class="tag">용어</span><span class="th-arrow">▾</span></span>
+    </div>
+    <div class="theory-body">
+      <p>사상의학에서는 건강 상태를 다음과 같이 분류합니다.</p>
+      <p style="margin-top:9px"><b>완실무병(完實無病)</b> — 건강함을 뜻하며, 건강의 조건을 완실무병 조건이라 합니다. 체질마다 완실무병 조건이 다릅니다.</p>
+      <p style="margin-top:7px"><b>대병(大病)</b> — 큰 병이란 뜻이 아니고, 체질병으로 아직은 중병이 아닌 것입니다.</p>
+      <p style="margin-top:7px"><b>중병(中病)</b> — 체질에 따라서 고유하게 치명적이거나 치료하기 힘든 병을 뜻합니다.</p>
+    </div>
+  </div>`;
+
+  // 단계별 블록
+  html+=`<div class="hstage hs-wansil">
+    <div class="hs-tag">완실무병 <span class="hs-han">完實無病</span></div>
+    <div class="hs-body">${H.wansil||''}</div>
+  </div>`;
+  html+=`<div class="hstage hs-daebyeong">
+    <div class="hs-tag">대병 <span class="hs-han">大病</span></div>
+    <div class="hs-body">${H.daebyeong||''}</div>
+  </div>`;
+  if(H.jungbyeong){
+    let sub='';
+    if(H.jungbyeongSub){
+      sub='<div class="hs-sub">'+H.jungbyeongSub.map(s=>`<div class="hs-sub-item"><b>${s[0]}</b> ${s[1]}</div>`).join('')+'</div>';
+    }
+    html+=`<div class="hstage hs-jungbyeong">
+      <div class="hs-tag">중병 <span class="hs-han">中病</span></div>
+      <div class="hs-body">${H.jungbyeong}</div>
+      ${sub}
+    </div>`;
+  }
+
+  // 출처
+  html+=`<div class="source-note">본 자료는 『알기쉬운 사상의학』에서 발췌하였고, 사상체질의학회(esasang.or.kr)의 협조로 제공합니다.</div>`;
+  return html;
+}
+function renderFood(foodKey){
+  // 8체질(형) 단위 — 단일 등급 그룹핑
+  const data = GUIDANCE_DATA8[foodKey];
+  if(!data){
+    return `<div class="source-note">해당 체질의 섭생 데이터가 준비 중입니다.</div>`;
+  }
+  const groups={'OO':[],'O':[],'△':[],'X':[],'XX':[]};
+  Object.keys(data).forEach(cat=>{
+    data[cat].forEach(it=>{
+      const g=(it.grade||'').trim();
+      if(!groups[g])return;            // 슬래시·변형값은 제외(8체질은 단일값)
+      groups[g].push(it.name);
+    });
+  });
+  let html='';
+  GRADE_ORDER.forEach(g=>{
+    if(groups[g].length===0)return;
+    const items = groups[g].join('<span class="sep">·</span>');
+    html+=`<div class="grade-group gbox-${GRADE_CLASS[g]}">
+      <div class="grade-head">
+        <span class="grade-badge gb-${GRADE_CLASS[g]}">${GRADE_LABEL[LANG][g]}</span>
+      </div>
+      <div class="food-list">${items}</div>
+    </div>`;
+  });
+  html+=`<div class="source-note">
+    출처 : 권도원 박사 8체질의학 섭생표 (8체질 원본)
+  </div>`;
+  return html;
+}
+
+function renderBasis(data){
+  const p = (activeSide==='bokhui' && data.bokhui) ? data.bokhui : data.primary;
+  const tr=p.trace||{}; const s1=tr.s1||{};
+  const sasang=s1.sasang||p.constitution||'';
+  const HYO={태양:'\u268C', 소음:'\u268D', 소양:'\u268E', 태음:'\u268F'};
+  const hyo=HYO[sasang]||'';
+  const finalLabel = p.displayLabel||p.formLabel||sasang;
+
+  // 장부대소
+  const Hb = (typeof HEALTH!=='undefined' && HEALTH[p.constitution]) ? HEALTH[p.constitution] : {};
+  const organHan = Hb.org||'', organKo = Hb.orgKo||'';
+
+  // 판정 결과 요약 (8체질명 미노출 — 상응표에서 다룸)
+  let html=`<div class="basis-block">
+    <div class="basis-title">판정 결과</div>
+    <div class="key-judge">
+      干支體質論 분석 결과 <b>${finalLabel}</b> <span class="hyo">${hyo}</span> 으로 판별되었습니다.
+      ${organHan?`<div class="kj-organ"><b>${organHan}</b> — ${organKo}</div>`:''}
+    </div>
+  </div>`;
+
+  // ── 장부대소 상응표 (干支體質論 8서열 ↔ 권도원 8체질) ──
+  html+=renderOrganMap(p);
+
+  // ── 干支體質論 소개 ──
+  html+=`<div class="theory-box">
+    <div class="theory-head" onclick="this.nextElementSibling.classList.toggle('show'); this.classList.toggle('open')">
+      <span class="th-q">干支體質論이란</span>
+      <span class="th-right"><span class="tag">소개</span><span class="th-arrow">▾</span></span>
+    </div>
+    <div class="theory-body">
+      <p><b>오행과 육기(六氣) — 상화(相火)</b><br>
+      일반적으로 진·술·축·미(辰戌丑未)는 토(土)로 분류하나, 干支體質論에서는 <b>미·술(未戌)을 화(和 = 相火)</b>로 본다. 황제내경 제68장(天元紀大論)의 관점에 따라, <b>상화(相火, 정신계)와 군화(君火, 물질계)가 짝이 되어 생명이 탄생</b>한다고 본다.</p>
+
+      <p style="margin-top:13px"><b>간지(干支)란 — 천간은 공전, 지지는 자전</b><br>
+      천간(天干)은 지구의 <b>공전(公轉)</b>을, 지지(地支)는 지구의 <b>자전(自轉)</b>을 나타낸다. 체질은 <b>태양력 절기(節氣)</b>를 기준으로 삼는다.</p>
+
+      <p style="margin-top:13px"><b>한 해의 시작 — 동지(冬至), 지뢰복(地雷復)</b><br>
+      복희역(伏羲易)에서 <b>일양(一陽)이 처음 시작하는 자리가 복(復) — 지뢰복괘(地雷復卦)</b>이며, 이는 <b>동지(冬至)</b>에 해당한다. 본 시스템은 통용되는 입춘(立春) 기준과 함께, 일양이 시작하는 동지를 병기(倂記)한다.</p>
+
+      <p style="margin-top:13px"><b>분포 (干支體質論 전수 검증)</b><br>
+      60갑자 전조합(N&nbsp;=&nbsp;216,000)과 실제 60년치 날짜(N&nbsp;=&nbsp;21,915)를 전수 판별한 결과는 거의 일치한다:</p>
+      <div class="dist-table">
+        <div class="dist-row"><span class="dist-name">태음인</span><span class="dist-bar"><span class="dist-fill" style="width:33.4%"></span></span><span class="dist-pct">33.4%</span></div>
+        <div class="dist-row"><span class="dist-name">소양인</span><span class="dist-bar"><span class="dist-fill" style="width:37.4%"></span></span><span class="dist-pct">37.3%</span></div>
+        <div class="dist-row"><span class="dist-name">소음인</span><span class="dist-bar"><span class="dist-fill" style="width:15.4%"></span></span><span class="dist-pct">15.4%</span></div>
+        <div class="dist-row"><span class="dist-name">태양인</span><span class="dist-bar"><span class="dist-fill" style="width:13.8%"></span></span><span class="dist-pct">13.8%</span></div>
+      </div>
+      <p style="margin-top:8px;font-size:11.5px;opacity:.65;line-height:1.6">전조합 / 실제 60년 — 태음 33.4 / 33.4 · 소양 37.4 / 37.3 · 소음 15.4 / 15.4 · 태양 13.8 / 13.8&#37;</p>
+      <p style="margin-top:9px;font-size:12.5px;opacity:.8">※ 태양인이 가장 희소하다 (1형 4.4&#37; · 2형 9.4&#37;).<br>※ 이 판별 기준은 더 연구·검증되어야 할 영역이다.</p>
+
+      <div class="sig">입체음양오행론 창시 — 고불 박용규<br>干支體質論 개발 — 황교헌</div>
+    </div>
+  </div>`;
+
+  return html;
+}
+function gjCell(pos,g){
+  return `<div class="gj-cell"><div class="gj-pos">${pos}</div><div class="gj-han">${g.stemHanja}${g.branchHanja}</div><div class="gj-kr">${g.stem}${g.branch}</div></div>`;
+}
+
+// ── 8체질 장부대소 상응 데이터 (干支體質論 8서열 ↔ 권도원 8체질) ──
+//   출처: 干支體質論 8서열 [원전] 立體陰陽五行 p.116~117·p.182 / 권도원 8체질 [외부 정설]
+//   음체질(Ⅰ형) 5부→오행 환산 [편저자 주] 표리: 위土·대장金·소장火·담木·방광水
+const ORGANMAP = {
+  // key: '소양2' 등 (sasang+form). seq=干支 오행서열, kwon=권도원체질, organ=장부약칭(한자), oh=오행, base=장기
+  // 오장(양체질): 肝心脾肺腎 / 오부(음체질): 胃大腸小腸膽膀胱
+  '태음1':{ seq:'木 > 火 > 土 > 水 > 金', kwon:'목음', organ:'膽 > 小腸 > 胃 > 膀胱 > 大腸', oh:'(木) (火) (土) (水) (金)', type:'음(5부)' },
+  '태음2':{ seq:'木 > 水 > 火 > 土 > 金', kwon:'목양', organ:'肝 > 腎 > 心 > 脾 > 肺',         oh:'(木) (水) (火) (土) (金)', type:'양(5장)' },
+  '소양1':{ seq:'土 > 金 > 火 > 木 > 水', kwon:'토음', organ:'胃 > 大腸 > 小腸 > 膽 > 膀胱',   oh:'(土) (金) (火) (木) (水)', type:'음(5부)' },
+  '소양2':{ seq:'土 > 火 > 木 > 金 > 水', kwon:'토양', organ:'脾 > 心 > 肝 > 肺 > 腎',         oh:'(土) (火) (木) (金) (水)', type:'양(5장)' },
+  '태양1':{ seq:'金 > 水 > 土 > 火 > 木', kwon:'금음', organ:'大腸 > 膀胱 > 胃 > 小腸 > 膽',   oh:'(金) (水) (土) (火) (木)', type:'음(5부)' },
+  '태양2':{ seq:'金 > 土 > 火 > 水 > 木', kwon:'금양', organ:'肺 > 脾 > 心 > 腎 > 肝',         oh:'(金) (土) (火) (水) (木)', type:'양(5장)' },
+  '소음1':{ seq:'水 > 木 > 火 > 金 > 土', kwon:'수음', organ:'膀胱 > 膽 > 小腸 > 大腸 > 胃',   oh:'(水) (木) (火) (金) (土)', type:'음(5부)' },
+  '소음2':{ seq:'水 > 金 > 木 > 火 > 土', kwon:'수양', organ:'腎 > 肺 > 肝 > 心 > 脾',         oh:'(水) (金) (木) (火) (土)', type:'양(5장)' },
+};
+
+function renderOrganMap(p){
+  const key = `${p.sasang}${p.form}`;          // '소양2'
+  const m = ORGANMAP[key];
+  if(!m) return '';
+  const formRoman = (p.form===1)?'Ⅰ':(p.form===2)?'Ⅱ':String(p.form);
+  // 干支 오행서열 → 셀
+  const seqCells = m.seq.split(' > ').map(s=>`<span class="om-el">${s}</span>`).join('<span class="om-gt">›</span>');
+  // 권도원 장부배열 → 셀 (오행 괄호 병기)
+  const organCells = m.organ.split(' > ').map((o,i)=>`<span class="om-org">${o}<span class="om-oh">${m.oh.split(' ')[i]}</span></span>`).join('<span class="om-gt">›</span>');
+  const noteEum = m.type.startsWith('음')
+    ? `<div class="om-note">※ 권도원 음체질은 오부(五腑) 기준으로 표기됩니다. 오행은 장부 표리(臟腑表裏) 관계로 환산하여 병기했습니다. <span class="om-tag">[편저자 주]</span></div>`
+    : '';
+  return `<div class="organ-map">
+    <div class="om-head">장부대소 — 干支體質論과 권도원 8체질의 상응</div>
+    <div class="om-table">
+      <div class="om-side om-left">
+        <div class="om-cap">干支體質論 <b>[${p.sasang}]${formRoman}</b></div>
+        <div class="om-seq"><span class="om-strlabel">오행강약</span>${seqCells}</div>
+      </div>
+      <div class="om-mid">≈</div>
+      <div class="om-side om-right">
+        <div class="om-cap">권도원 <b>[${m.kwon}체질]</b></div>
+        <div class="om-seq">${organCells}</div>
+      </div>
+    </div>
+    ${noteEum}
+    <div class="om-src">干支體質論 8서열 — 『立體陰陽五行』 [원전] · 권도원 8체질 장부대소 — [참고]</div>
+  </div>`;
+}
+</script>
+</body>
+</html>
